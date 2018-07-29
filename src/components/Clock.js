@@ -4,40 +4,28 @@ export default class Clock extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      break: 5, session: 25, minutes: '00', seconds: '03', timerStarted: false, 
+      break: 5, session: 25, minutes: '25', seconds: '00', timerStarted: false, 
       timerStopped: true, timerPaused: false, timerLabel: 'Session', playAudio: false
     };
   }
 
   handleTimerStart = () => {
-    const audio = new Audio("https://goo.gl/65cBl1");
     if(this.state.timerStopped || this.state.timerPaused) {
       this.setState({ timerStarted: true, timerStopped: false, timerPaused: false });
       this.timer = setInterval(() => {
         const { minutes, seconds } = this.state;
-        if(minutes === '00' && seconds === '00' || minutes === '00' && seconds === '01') {
-          this.setState({ playAudio: true });
-        } else if(minutes !== '00'){
-          this.setState({ autoPlay: false });
-        }
-        if(parseInt(seconds) > 0) {
-          if(parseInt(seconds) <= 10) {
-            this.setState({ seconds: `0${seconds - 1}` })
-          } else {
-            this.setState({ seconds: seconds - 1 });
-          }
-        } else if (parseInt(minutes) > 0) {
-          if(parseInt(minutes) < 10) {
-            this.setState({ minutes: `0${minutes - 1}`, seconds: String(59) });
-          } else {
-            this.setState({ minutes: String(minutes - 1), seconds: String(59) });
-          }
-        } else if (minutes === '00' && seconds === '00'){
-            if(this.state.timerLabel === 'Session') {
-              this.setState({ minutes: this.state.break, seconds: '00', timerLabel: 'Break' });
-            } else {
-              this.setState({ minutes: this.state.session, seconds: '00', timerLabel: 'Session' });
-            }
+        if(seconds > 0 && seconds <= 10) {
+          this.setState({ seconds: `0${seconds - 1}` })
+        } else if(seconds > 10 && seconds < 60 ) {
+          this.setState({ seconds: seconds - 1, autoPlay: false });
+        } else if (minutes > 0 && minutes < 10) {
+          this.setState({ minutes: `0${minutes - 1}`, seconds: '59' });
+        } else if(minutes > 10 && minutes < 60){
+          this.setState({ minutes: String(minutes - 1), seconds: '59' });
+        } else if (minutes === '00' && seconds === '00' && this.state.timerLabel === 'Session'){
+          this.setState({ minutes: this.state.break, seconds: '00', timerLabel: 'Break', playAudio: true });
+        } else {
+          this.setState({ minutes: this.state.session, seconds: '00', timerLabel: 'Session', playAudio: true });
         }
       }, 1000);
     } else if(this.state.timerStarted) {
